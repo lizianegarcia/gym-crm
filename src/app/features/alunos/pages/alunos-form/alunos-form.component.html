@@ -1,0 +1,30 @@
+<mat-card>
+  <mat-card-title>{{ alunoId ? 'Editar Aluno' : 'Novo Aluno' }}</mat-card-title>
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+    <mat-form-field appearance="outline">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>CPF</mat-label>
+      <input matInput formControlName="cpf">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Plano</mat-label>
+      <mat-select formControlName="plano">
+        <mat-option value="Mensal">Mensal</mat-option>
+        <mat-option value="Anual">Anual</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">Salvar</button>
+  </form>
+</mat-card>

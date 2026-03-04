@@ -1,0 +1,35 @@
+<mat-grid-list cols="3" rowHeight="150px" gutterSize="16px">
+  <mat-grid-tile>
+    <mat-card>
+      <mat-card-title>Total de Alunos</mat-card-title>
+      <mat-card-content>{{ totalAlunos }}</mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+
+  <mat-grid-tile>
+    <mat-card>
+      <mat-card-title>Ativos</mat-card-title>
+      <mat-card-content>{{ ativos }}</mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+
+  <mat-grid-tile>
+    <mat-card>
+      <mat-card-title>Inadimplentes</mat-card-title>
+      <mat-card-content>{{ inadimplentes }}</mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>
+
+<div style="margin-top: 20px;">
+  <mat-card>
+    <mat-card-title>Alunos por Plano</mat-card-title>
+    <mat-card-content>
+      <ul>
+        <li *ngFor="let plano of planos | keyvalue">
+          {{ plano.key }}: {{ plano.value }}
+        </li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+</div>
