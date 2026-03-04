@@ -1,0 +1,9 @@
+<div class="dashboard-cards">
+  <app-card-metric title="Total de Alunos" [value]="totalAlunos"></app-card-metric>
+  <app-card-metric title="Ativos" [value]="ativos"></app-card-metric>
+  <app-card-metric title="Inadimplentes" [value]="inadimplentes"></app-card-metric>
+</div>
+
+<div class="dashboard-charts">
+  <app-chart [data]="planos" title="Alunos por Plano"></app-chart>
+</div>
