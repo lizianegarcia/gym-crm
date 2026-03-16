@@ -1,67 +1,155 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { AlunoService } from '../../../../core/services/aluno.service';
-import { Aluno } from '../../../../core/models/aluno.model';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+import { AlunoService } from '../../../../core/services/aluno.service';
+import { Aluno } from '../../../../core/models/aluno.model';
+
+import { PlanoService } from '../../../../core/services/plano.service';
+import { Plano } from '../../../../core/models/plano.model';
 
 @Component({
   selector: 'app-alunos-form',
-  templateUrl: './alunos-form.component.html',
   standalone: true,
+  templateUrl: './alunos-form.component.html',
+
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterModule,
+
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatButtonModule,
     MatSelectModule,
-    MatButtonModule
+
+    MatSnackBarModule
   ]
 })
 export class AlunosFormComponent implements OnInit {
-  form!: FormGroup;
+
   alunoId?: number;
+
+  form!: FormGroup;
+
+  planos: Plano[] = [];
 
   constructor(
     private fb: FormBuilder,
     private alunoService: AlunoService,
+    private planoService: PlanoService,
+    private route: ActivatedRoute,
     private router: Router,
-    private route: ActivatedRoute
+    private snack: MatSnackBar
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
+
     this.form = this.fb.group({
       nome: ['', Validators.required],
       cpf: ['', Validators.required],
       telefone: [''],
-      email: ['', Validators.email],
-      plano: ['', Validators.required],
+      email: [''],
+      planoId: [null, Validators.required],
       status: ['ATIVO']
     });
 
-    this.alunoId = Number(this.route.snapshot.paramMap.get('id'));
-    if(this.alunoId){
-      this.alunoService.buscarPorId(this.alunoId).subscribe(aluno => this.form.patchValue(aluno));
+    this.carregarPlanos();
+
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (id) {
+      this.alunoId = Number(id);
+      this.carregarAluno();
     }
+
   }
 
-  salvar(){
-    const aluno: Aluno = {
-      ...this.form.value,
-      id: this.alunoId
-    };
+  carregarPlanos() {
 
-    if(this.alunoId){
-      this.alunoService.atualizar(aluno).subscribe(()=> this.router.navigate(['/alunos']));
+    this.planoService.listar().subscribe({
+      next: (planos) => {
+        this.planos = planos;
+      }
+    });
+
+  }
+
+  carregarAluno() {
+
+    if (!this.alunoId) return;
+
+    this.alunoService.buscarPorId(this.alunoId).subscribe({
+
+      next: (aluno) => {
+        this.form.patchValue(aluno);
+      },
+
+      error: () => {
+        this.snack.open('Erro ao carregar aluno', 'Fechar', {
+          duration: 3000
+        });
+      }
+
+    });
+
+  }
+
+  salvar() {
+
+    if (this.form.invalid) return;
+
+    const aluno = this.form.value as Aluno;
+
+    if (this.alunoId) {
+
+      aluno.id = this.alunoId;
+
+      this.alunoService.atualizar(aluno).subscribe({
+
+        next: () => {
+
+          this.snack.open('Aluno atualizado com sucesso', 'OK', {
+            duration: 2500
+          });
+
+          this.router.navigate(['/alunos']);
+
+        }
+
+      });
+
     } else {
-      this.alunoService.criar(aluno).subscribe(()=> this.router.navigate(['/alunos']));
+
+      this.alunoService.criar(aluno).subscribe({
+
+        next: () => {
+
+          this.snack.open('Aluno criado com sucesso', 'OK', {
+            duration: 2500
+          });
+
+          this.router.navigate(['/alunos']);
+
+        }
+
+      });
+
     }
+
   }
+
+  cancelar() {
+    this.router.navigate(['/alunos']);
+  }
+
 }

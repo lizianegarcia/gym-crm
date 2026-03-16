@@ -1,0 +1,47 @@
+<mat-card>
+
+  <h2>{{ planoId ? 'Editar Plano' : 'Novo Plano' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Valor</mat-label>
+      <input matInput type="number" formControlName="valor">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Duração (meses)</mat-label>
+      <input matInput type="number" formControlName="duracaoMeses">
+    </mat-form-field>
+
+    <div style="margin-top:20px">
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid">
+
+        Salvar
+
+      </button>
+
+      <button
+        mat-button
+        type="button"
+        (click)="cancelar()">
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </form>
+
+</mat-card>

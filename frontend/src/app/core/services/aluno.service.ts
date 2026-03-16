@@ -1,33 +1,39 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Aluno } from '../models/aluno.model';
-import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',  
-})
+export interface Aluno {
+  id?: number;
+  nome: string;
+  cpf: string;
+  telefone?: string;
+  email?: string;
+  status: string;
+  planoId: number;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AlunoService {
-  private baseUrl = 'http://localhost:3000/alunos'; // URL do json-server
+  private api = 'http://localhost:3000/alunos';
 
   constructor(private http: HttpClient) {}
 
-  listar(): Observable<Aluno[]> {
-    return this.http.get<Aluno[]>(this.baseUrl);
+  listar() {
+    return this.http.get<Aluno[]>(this.api);
   }
 
-  buscarPorId(id: number): Observable<Aluno> {
-    return this.http.get<Aluno>(`${this.baseUrl}/${id}`);
+  buscarPorId(id: number) {
+    return this.http.get<Aluno>(`${this.api}/${id}`);
   }
 
-  criar(aluno: Aluno): Observable<Aluno> {
-    return this.http.post<Aluno>(this.baseUrl, aluno);
+  criar(aluno: Aluno) {
+    return this.http.post<Aluno>(this.api, aluno);
   }
 
-  atualizar(aluno: Aluno): Observable<Aluno> {
-    return this.http.put<Aluno>(`${this.baseUrl}/${aluno.id}`, aluno);
+  atualizar(aluno: Aluno) {
+    return this.http.put<Aluno>(`${this.api}/${aluno.id}`, aluno);
   }
 
-  deletar(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+  deletar(id: number) {
+    return this.http.delete<void>(`${this.api}/${id}`);
   }
 }

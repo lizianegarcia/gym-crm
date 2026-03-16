@@ -1,30 +1,67 @@
 <mat-card>
-  <mat-card-title>{{ alunoId ? 'Editar Aluno' : 'Novo Aluno' }}</mat-card-title>
+
+  <h2>{{ alunoId ? 'Editar Aluno' : 'Novo Aluno' }}</h2>
 
   <form [formGroup]="form" (ngSubmit)="salvar()">
-    <mat-form-field appearance="outline">
+
+    <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Nome</mat-label>
       <input matInput formControlName="nome">
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="width:100%">
       <mat-label>CPF</mat-label>
       <input matInput formControlName="cpf">
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Telefone</mat-label>
+      <input matInput formControlName="telefone">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Email</mat-label>
       <input matInput formControlName="email">
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <!-- SELECT DE PLANOS -->
+
+    <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Plano</mat-label>
-      <mat-select formControlName="plano">
-        <mat-option value="Mensal">Mensal</mat-option>
-        <mat-option value="Anual">Anual</mat-option>
+
+      <mat-select formControlName="planoId">
+
+        <mat-option *ngFor="let plano of planos" [value]="plano.id">
+          {{ plano.nome }} — {{ plano.valor | currency:'BRL' }}
+        </mat-option>
+
       </mat-select>
+
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit">Salvar</button>
+    <div style="margin-top:20px">
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid">
+
+        Salvar
+
+      </button>
+
+      <button
+        mat-button
+        type="button"
+        (click)="cancelar()">
+
+        Cancelar
+
+      </button>
+
+    </div>
+
   </form>
+
 </mat-card>

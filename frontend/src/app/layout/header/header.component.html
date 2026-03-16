@@ -1,6 +1,30 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button (click)="drawer.toggle()">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Gym CRM</span>
+<mat-toolbar class="toolbar">
+
+  <!-- Esquerda -->
+  <div class="left">
+    <span class="brand" routerLink="/">Gym CRM</span>
+  </div>
+
+  <!-- Direita -->
+  <div class="right">
+    <!-- opcional: ícone de ajuda/notificação -->
+    <button mat-icon-button aria-label="Ajuda">
+      <mat-icon>help_outline</mat-icon>
+    </button>
+
+    <!-- Menu do usuário -->
+    <button mat-stroked-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      <span class="user-label">Conta</span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Sair
+      </button>
+    </mat-menu>
+  </div>
+
 </mat-toolbar>

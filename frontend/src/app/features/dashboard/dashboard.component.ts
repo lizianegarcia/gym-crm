@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
       this.ativos = alunos.filter(a => a.status === 'ATIVO').length;
       this.inadimplentes = alunos.filter(a => a.status === 'INADIMPLENTE').length;
       this.planos = alunos.reduce((acc, a) => {
-        acc[a.plano] = (acc[a.plano] || 0) + 1;
+        acc[a.planoId] = (acc[a.planoId] || 0) + 1;
         return acc;
       }, {} as any);
     });

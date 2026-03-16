@@ -1,20 +1,25 @@
+<div class="brand">
+  <div class="title">Gym CRM</div>
+  <div class="subtitle">Painel</div>
+</div>
+
 <mat-nav-list>
-  <a mat-list-item routerLink="/dashboard">
+  <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
     <mat-icon>dashboard</mat-icon>
     Dashboard
   </a>
 
-  <a mat-list-item routerLink="/alunos">
+  <a mat-list-item routerLink="/alunos" routerLinkActive="active">
     <mat-icon>group</mat-icon>
     Alunos
   </a>
 
-  <a mat-list-item routerLink="/planos">
+  <a mat-list-item routerLink="/planos" routerLinkActive="active">
     <mat-icon>fitness_center</mat-icon>
     Planos
   </a>
 
-  <a mat-list-item routerLink="/financeiro">
+  <a mat-list-item routerLink="/financeiro" routerLinkActive="active">
     <mat-icon>payments</mat-icon>
     Financeiro
   </a>
