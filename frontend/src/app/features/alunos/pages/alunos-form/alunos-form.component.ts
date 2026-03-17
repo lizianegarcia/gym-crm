@@ -16,6 +16,8 @@ import { Aluno } from '../../../../core/models/aluno.model';
 
 import { PlanoService } from '../../../../core/services/plano.service';
 import { Plano } from '../../../../core/models/plano.model';
+import { CpfMaskDirective } from '../../../../shared/directives/cpf-mask.directive';
+import { PhoneMaskDirective } from '../../../../shared/directives/phone-mask.directive';
 
 @Component({
   selector: 'app-alunos-form',
@@ -32,7 +34,9 @@ import { Plano } from '../../../../core/models/plano.model';
     MatButtonModule,
     MatSelectModule,
 
-    MatSnackBarModule
+    MatSnackBarModule,
+    CpfMaskDirective,
+    PhoneMaskDirective
   ]
 })
 export class AlunosFormComponent implements OnInit {

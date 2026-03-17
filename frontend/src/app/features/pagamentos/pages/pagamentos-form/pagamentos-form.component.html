@@ -1,0 +1,36 @@
+<mat-card>
+
+  <h2>Registrar Pagamento</h2>
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Valor</mat-label>
+      <input matInput type="number" formControlName="valor">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Data</mat-label>
+      <input matInput type="date" formControlName="data">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Status</mat-label>
+      <input matInput formControlName="status">
+    </mat-form-field>
+
+    <div style="margin-top:20px">
+
+      <button mat-raised-button color="primary" type="submit">
+        Salvar
+      </button>
+
+      <button mat-button type="button" (click)="cancelar()">
+        Cancelar
+      </button>
+
+    </div>
+
+  </form>
+
+</mat-card>

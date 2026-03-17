@@ -4,28 +4,37 @@
 
   <form [formGroup]="form" (ngSubmit)="salvar()">
 
+    <!-- NOME -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Nome</mat-label>
       <input matInput formControlName="nome">
     </mat-form-field>
 
+    <!-- CPF -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>CPF</mat-label>
-      <input matInput formControlName="cpf">
+      <input
+        matInput
+        formControlName="cpf"
+        cpfMask>
     </mat-form-field>
 
+    <!-- TELEFONE -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Telefone</mat-label>
-      <input matInput formControlName="telefone">
+      <input
+        matInput
+        formControlName="telefone"
+        phoneMask>
     </mat-form-field>
 
+    <!-- EMAIL -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Email</mat-label>
       <input matInput formControlName="email">
     </mat-form-field>
 
-    <!-- SELECT DE PLANOS -->
-
+    <!-- PLANO -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Plano</mat-label>
 

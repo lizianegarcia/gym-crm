@@ -1,9 +1,23 @@
-<div class="dashboard-cards">
-  <app-card-metric title="Total de Alunos" [value]="totalAlunos"></app-card-metric>
-  <app-card-metric title="Ativos" [value]="ativos"></app-card-metric>
-  <app-card-metric title="Inadimplentes" [value]="inadimplentes"></app-card-metric>
-</div>
+<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px">
 
-<div class="dashboard-charts">
-  <app-chart [data]="planos" title="Alunos por Plano"></app-chart>
+  <mat-card>
+    <h3>Alunos Ativos</h3>
+    <h1>{{ alunosAtivos }}</h1>
+  </mat-card>
+
+  <mat-card>
+    <h3>Faturamento Mensal</h3>
+    <h1>{{ faturamento | currency:'BRL' }}</h1>
+  </mat-card>
+
+  <mat-card>
+    <h3>Inadimplentes</h3>
+    <h1>{{ inadimplentes }}</h1>
+  </mat-card>
+
+  <mat-card>
+    <h3>Novos Alunos</h3>
+    <h1>{{ novosAlunos }}</h1>
+  </mat-card>
+
 </div>

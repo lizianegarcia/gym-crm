@@ -12,6 +12,8 @@ import { AlunosFormComponent } from './features/alunos/pages/alunos-form/alunos-
 
 import { PlanosListComponent } from './features/planos/pages/planos-list/planos-list.component';
 import { PlanosFormComponent } from './features/planos/pages/planos-form/planos-form.component';
+import { PagamentosListComponent } from './features/pagamentos/pages/pagamentos-list/pagamentos-list.component';
+import { PagamentosFormComponent } from './features/pagamentos/pages/pagamentos-form/pagamentos-form.component';
 
 export const routes: Routes = [
   {
@@ -58,7 +60,19 @@ export const routes: Routes = [
       {
         path: 'planos/:id',
         component: PlanosFormComponent
-      }
+      },
+
+      {
+        path: 'pagamentos',
+        component: PagamentosListComponent
+      },
+
+      {
+        path: 'pagamentos/novo/:alunoId',
+        component: PagamentosFormComponent
+      },
+
+
 
     ]
   },

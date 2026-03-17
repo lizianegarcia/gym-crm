@@ -1,33 +1,75 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AlunoService } from '../../core/services/aluno.service';
-import { ChartComponent } from '../../shared/components/chart/chart.component';
-import { CardMetricComponent } from '../../shared/components/card-metric/card-metric.component';
+
+import { MatCardModule } from '@angular/material/card';
+
+import { AlunoService } from '../alunos/../alunos/../../core/services/aluno.service';
+import { PlanoService } from '../../core/services/plano.service';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, ChartComponent, CardMetricComponent]
+  templateUrl: './dashboard.component.html',
+
+  imports: [
+    CommonModule,
+    MatCardModule
+  ]
 })
 export class DashboardComponent implements OnInit {
-  totalAlunos = 0;
-  ativos = 0;
+
+  alunosAtivos = 0;
+  faturamento = 0;
   inadimplentes = 0;
-  planos: any = {};
+  novosAlunos = 0;
 
-  constructor(private alunoService: AlunoService) {}
+  constructor(
+    private alunoService: AlunoService,
+    private planoService: PlanoService
+  ) {}
 
-  ngOnInit(): void {
-    this.alunoService.listar().subscribe((alunos) => {
-      this.totalAlunos = alunos.length;
-      this.ativos = alunos.filter(a => a.status === 'ATIVO').length;
-      this.inadimplentes = alunos.filter(a => a.status === 'INADIMPLENTE').length;
-      this.planos = alunos.reduce((acc, a) => {
-        acc[a.planoId] = (acc[a.planoId] || 0) + 1;
-        return acc;
-      }, {} as any);
-    });
+  ngOnInit() {
+    this.carregarDados();
   }
+
+  carregarDados() {
+
+    this.alunoService.listar().subscribe(alunos => {
+
+      this.alunosAtivos = alunos.filter(a => a.status === 'ATIVO').length;
+
+      // Simulação de inadimplência (ex: status diferente de ATIVO)
+      this.inadimplentes = alunos.filter(a => a.status !== 'ATIVO').length;
+
+      // Novos alunos do mês (simples por enquanto)
+      this.novosAlunos = alunos.length;
+
+      this.calcularFaturamento(alunos);
+
+    });
+
+  }
+
+  calcularFaturamento(alunos: any[]) {
+
+    this.planoService.listar().subscribe(planos => {
+
+      let total = 0;
+
+      alunos.forEach(aluno => {
+
+        const plano = planos.find(p => p.id === aluno.planoId);
+
+        if (plano && aluno.status === 'ATIVO') {
+          total += plano.valor;
+        }
+
+      });
+
+      this.faturamento = total;
+
+    });
+
+  }
+
 }
