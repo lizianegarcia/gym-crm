@@ -16,8 +16,9 @@ import { Aluno } from '../../../../core/models/aluno.model';
 
 import { PlanoService } from '../../../../core/services/plano.service';
 import { Plano } from '../../../../core/models/plano.model';
-import { CpfMaskDirective } from '../../../../shared/directives/cpf-mask.directive';
+
 import { PhoneMaskDirective } from '../../../../shared/directives/phone-mask.directive';
+import { CpfMaskDirective } from '../../../../shared/directives/cpf-mask.directive';
 
 @Component({
   selector: 'app-alunos-form',
@@ -35,16 +36,15 @@ import { PhoneMaskDirective } from '../../../../shared/directives/phone-mask.dir
     MatSelectModule,
 
     MatSnackBarModule,
-    CpfMaskDirective,
-    PhoneMaskDirective
+
+    PhoneMaskDirective,
+    CpfMaskDirective
   ]
 })
 export class AlunosFormComponent implements OnInit {
 
   alunoId?: number;
-
   form!: FormGroup;
-
   planos: Plano[] = [];
 
   constructor(
@@ -64,7 +64,8 @@ export class AlunosFormComponent implements OnInit {
       telefone: [''],
       email: [''],
       planoId: [null, Validators.required],
-      status: ['ATIVO']
+      status: ['ATIVO'],
+      dataInicio: [new Date().toISOString().substring(0,10), Validators.required]
     });
 
     this.carregarPlanos();
@@ -79,27 +80,69 @@ export class AlunosFormComponent implements OnInit {
   }
 
   carregarPlanos() {
-
-    this.planoService.listar().subscribe({
-      next: (planos) => {
-        this.planos = planos;
-      }
+    this.planoService.listar().subscribe(planos => {
+      this.planos = planos;
     });
-
   }
 
   carregarAluno() {
 
     if (!this.alunoId) return;
 
-    this.alunoService.buscarPorId(this.alunoId).subscribe({
+    this.alunoService.buscarPorId(this.alunoId).subscribe(aluno => {
+      this.form.patchValue(aluno);
+    });
 
-      next: (aluno) => {
-        this.form.patchValue(aluno);
+  }
+
+  salvar() {
+
+  if (this.form.invalid) return;
+
+  const formValue = this.form.value;
+
+  const aluno: any = {
+    ...formValue,
+    planoId: Number(formValue.planoId),
+    dataInicio: new Date(formValue.dataInicio).toISOString()
+  };
+
+  if (this.alunoId) {
+
+    aluno.id = this.alunoId;
+
+    this.alunoService.atualizar(aluno).subscribe({
+
+      next: () => {
+        this.snack.open('Aluno atualizado com sucesso ✅', 'OK', {
+          duration: 2500
+        });
+
+        this.router.navigate(['/alunos']);
       },
 
-      error: () => {
-        this.snack.open('Erro ao carregar aluno', 'Fechar', {
+      error: (err) => {
+        this.snack.open(err.error?.error || 'Erro ao atualizar aluno', 'Fechar', {
+          duration: 3000
+        });
+      }
+
+    });
+
+  } else {
+
+    this.alunoService.criar(aluno).subscribe({
+
+      next: () => {
+        this.snack.open('Aluno criado com sucesso ✅', 'OK', {
+          duration: 2500
+        });
+
+        this.router.navigate(['/alunos']);
+      },
+
+      error: (err) => {
+        this.snack.open(err.error?.error || 'Erro ao criar aluno', 'Fechar', {
           duration: 3000
         });
       }
@@ -108,50 +151,7 @@ export class AlunosFormComponent implements OnInit {
 
   }
 
-  salvar() {
-
-    if (this.form.invalid) return;
-
-    const aluno = this.form.value as Aluno;
-
-    if (this.alunoId) {
-
-      aluno.id = this.alunoId;
-
-      this.alunoService.atualizar(aluno).subscribe({
-
-        next: () => {
-
-          this.snack.open('Aluno atualizado com sucesso', 'OK', {
-            duration: 2500
-          });
-
-          this.router.navigate(['/alunos']);
-
-        }
-
-      });
-
-    } else {
-
-      this.alunoService.criar(aluno).subscribe({
-
-        next: () => {
-
-          this.snack.open('Aluno criado com sucesso', 'OK', {
-            duration: 2500
-          });
-
-          this.router.navigate(['/alunos']);
-
-        }
-
-      });
-
-    }
-
-  }
-
+}
   cancelar() {
     this.router.navigate(['/alunos']);
   }

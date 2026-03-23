@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -25,19 +25,16 @@ import { Pagamento } from '../../../../core/models/pagamento.model';
   standalone: true,
   templateUrl: './alunos-list.component.html',
   styleUrls: ['./alunos-list.component.scss'],
-
   imports: [
     CommonModule,
     FormsModule,
     RouterModule,
-
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-
     MatSnackBarModule,
     MatDialogModule,
   ]
@@ -57,7 +54,8 @@ export class AlunosListComponent implements OnInit {
     private pagamentoService: PagamentoService,
     private snack: MatSnackBar,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef // 🔥 IMPORTANTE
   ) {}
 
   ngOnInit() {
@@ -66,51 +64,53 @@ export class AlunosListComponent implements OnInit {
 
   carregarDados() {
 
-    this.alunoService.listar().subscribe(alunos => {
+    this.alunoService.listar().subscribe({
 
-      this.pagamentoService.listar().subscribe(pagamentos => {
+      next: (alunos) => {
+        this.alunos = alunos;
+        this.alunosFiltrados = [...alunos];
 
-        this.pagamentos = pagamentos;
+        this.cdr.detectChanges();
+      },
 
-        this.alunos = alunos.map(aluno => ({
-          ...aluno,
-          statusFinanceiro: this.getStatusFinanceiro(aluno.id!)
-        }));
-
-        this.alunosFiltrados = [...this.alunos];
-
-      });
+      error: () => {
+        this.snack.open('Erro ao carregar alunos', 'Fechar', {
+          duration: 3000
+        });
+      }
 
     });
 
   }
 
-  getStatusFinanceiro(alunoId: number): string {
+  getStatusFinanceiro(aluno: any): string {
 
-    const pagamentosAluno = this.pagamentos.filter(p => p.alunoId === alunoId);
+    if (!aluno.dataVencimento) return 'SEM_PAGAMENTO';
 
-    if (pagamentosAluno.length === 0) return 'SEM_PAGAMENTO';
+    const hoje = new Date();
+    const vencimento = new Date(aluno.dataVencimento);
 
-    const temPagamento = pagamentosAluno.some(p => p.status === 'PAGO');
-
-    return temPagamento ? 'EM_DIA' : 'INADIMPLENTE';
+    return hoje > vencimento ? 'INADIMPLENTE' : 'EM_DIA';
   }
 
   getStatusLabel(status: string): string {
-
     switch (status) {
       case 'EM_DIA': return '🟢 Em dia';
       case 'INADIMPLENTE': return '🔴 Inadimplente';
       default: return '⚪ Sem pagamentos';
     }
-
   }
 
   aplicarFiltro() {
     const f = this.filtro.toLowerCase();
+
     this.alunosFiltrados = this.alunos.filter(
-      (a: any) => a.nome.toLowerCase().includes(f) || a.cpf.includes(f)
+      (a: any) =>
+        a.nome.toLowerCase().includes(f) ||
+        a.cpf.includes(f)
     );
+
+    this.alunosFiltrados = [...this.alunosFiltrados];
   }
 
   registrarPagamento(alunoId: number) {
@@ -124,7 +124,6 @@ export class AlunosListComponent implements OnInit {
       data: {
         titulo: 'Excluir aluno',
         mensagem: 'Deseja realmente excluir este aluno?',
-        textoConfirmar: 'Excluir'
       }
     });
 
@@ -138,8 +137,7 @@ export class AlunosListComponent implements OnInit {
 
           this.alunos = this.alunos.filter(a => a.id !== id);
 
-          if (this.filtro.trim()) this.aplicarFiltro();
-          else this.alunosFiltrados = [...this.alunos];
+          this.alunosFiltrados = [...this.alunos];
 
           this.snack.open('Aluno excluído com sucesso ✅', 'OK', {
             duration: 2500

@@ -4,9 +4,14 @@
 
   <form [formGroup]="form" (ngSubmit)="salvar()">
 
-    <mat-form-field appearance="outline" style="width:100%">
+    <mat-form-field appearance="fill">
       <mat-label>Valor</mat-label>
-      <input matInput type="number" formControlName="valor">
+      <input
+        matInput
+        formControlName="valor"
+        currencyMask
+        placeholder="R$ 0,00"
+      >
     </mat-form-field>
 
     <mat-form-field appearance="outline" style="width:100%">

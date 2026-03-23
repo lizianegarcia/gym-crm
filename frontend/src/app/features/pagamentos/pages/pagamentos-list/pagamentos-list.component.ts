@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -10,6 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { PagamentoService } from '../../../../core/services/pagamento.service';
 import { Pagamento } from '../../../../core/models/pagamento.model';
 
+import { AlunoService } from '../../../../core/services/aluno.service';
+import { Aluno } from '../../../../core/models/aluno.model';
+
 @Component({
   selector: 'app-pagamentos-list',
   standalone: true,
@@ -18,6 +21,7 @@ import { Pagamento } from '../../../../core/models/pagamento.model';
   imports: [
     CommonModule,
     CurrencyPipe,
+    DatePipe,
     MatTableModule,
     MatPaginatorModule,
     MatCardModule,
@@ -26,23 +30,45 @@ import { Pagamento } from '../../../../core/models/pagamento.model';
 })
 export class PagamentosListComponent implements OnInit {
 
-  displayedColumns = ['valor', 'data', 'status'];
+  displayedColumns = ['aluno', 'valor', 'data', 'status'];
 
   dataSource = new MatTableDataSource<Pagamento>();
 
+  alunosMap = new Map<number, string>();
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private pagamentoService: PagamentoService) {}
+  constructor(
+    private pagamentoService: PagamentoService,
+    private alunoService: AlunoService
+  ) {}
 
   ngOnInit() {
-    this.carregar();
+    this.carregarDados();
   }
 
-  carregar() {
-    this.pagamentoService.listar().subscribe(data => {
-      this.dataSource.data = data;
-      this.dataSource.paginator = this.paginator;
+  carregarDados() {
+
+    this.alunoService.listar().subscribe((alunos: Aluno[]) => {
+
+      // cria mapa id → nome
+      alunos.forEach(a => {
+        if (a.id) this.alunosMap.set(a.id, a.nome);
+      });
+
+      this.pagamentoService.listar().subscribe((pagamentos: Pagamento[]) => {
+
+        this.dataSource.data = pagamentos;
+        this.dataSource.paginator = this.paginator;
+
+      });
+
     });
+
+  }
+
+  getNomeAluno(alunoId: number): string {
+    return this.alunosMap.get(alunoId) || 'Aluno não encontrado';
   }
 
 }

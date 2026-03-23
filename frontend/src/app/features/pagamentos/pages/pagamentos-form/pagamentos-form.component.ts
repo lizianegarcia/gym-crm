@@ -46,7 +46,7 @@ export class PagamentosFormComponent implements OnInit {
     this.alunoId = Number(this.route.snapshot.paramMap.get('alunoId'));
 
     this.form = this.fb.group({
-      valor: [0, [Validators.required, Validators.min(0)]],
+      valor: ['', [Validators.required]], // 🔥 agora string (máscara)
       data: [new Date().toISOString().substring(0,10), Validators.required],
       status: ['PAGO', Validators.required]
     });
@@ -57,8 +57,20 @@ export class PagamentosFormComponent implements OnInit {
 
     if (this.form.invalid) return;
 
+    // 🔥 pega valor formatado
+    const valorFormatado = this.form.value.valor;
+
+    // 🔥 converte "R$ 1.234,56" → 1234.56
+    const valorNumerico = Number(
+      valorFormatado
+        .replace(/\./g, '')
+        .replace(',', '.')
+        .replace(/[^\d.]/g, '')
+    );
+
     const pagamento: Pagamento = {
       ...this.form.value,
+      valor: valorNumerico, // 🔥 aqui entra o valor convertido
       alunoId: this.alunoId
     };
 

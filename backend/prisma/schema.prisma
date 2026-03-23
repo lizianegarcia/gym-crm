@@ -41,6 +41,9 @@ model Aluno {
   usuarioId Int
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
 
+  dataInicio      DateTime?
+  dataVencimento  DateTime?
+
   pagamentos Pagamento[]
 }
 

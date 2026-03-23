@@ -4,71 +4,49 @@
 
   <form [formGroup]="form" (ngSubmit)="salvar()">
 
-    <!-- NOME -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Nome</mat-label>
       <input matInput formControlName="nome">
     </mat-form-field>
 
-    <!-- CPF -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>CPF</mat-label>
-      <input
-        matInput
-        formControlName="cpf"
-        cpfMask>
+      <input matInput formControlName="cpf" cpfMask>
     </mat-form-field>
 
-    <!-- TELEFONE -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Telefone</mat-label>
-      <input
-        matInput
-        formControlName="telefone"
-        phoneMask>
+      <input matInput formControlName="telefone" phoneMask>
     </mat-form-field>
 
-    <!-- EMAIL -->
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Email</mat-label>
       <input matInput formControlName="email">
     </mat-form-field>
 
-    <!-- PLANO -->
+    <!-- NOVO -->
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Data de início</mat-label>
+      <input matInput type="date" formControlName="dataInicio">
+    </mat-form-field>
+
     <mat-form-field appearance="outline" style="width:100%">
       <mat-label>Plano</mat-label>
-
       <mat-select formControlName="planoId">
-
         <mat-option *ngFor="let plano of planos" [value]="plano.id">
           {{ plano.nome }} — {{ plano.valor | currency:'BRL' }}
         </mat-option>
-
       </mat-select>
-
     </mat-form-field>
 
     <div style="margin-top:20px">
-
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="form.invalid">
-
+      <button mat-raised-button color="primary" type="submit">
         Salvar
-
       </button>
 
-      <button
-        mat-button
-        type="button"
-        (click)="cancelar()">
-
+      <button mat-button type="button" (click)="cancelar()">
         Cancelar
-
       </button>
-
     </div>
 
   </form>
