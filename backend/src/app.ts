@@ -6,6 +6,7 @@ import { authMiddleware } from "./middlewares/auth.middleware";
 import { alunosRoutes } from "./modules/alunos/alunos.routes";
 import { planosRoutes } from "./modules/planos/planos.routes";
 import { pagamentosRoutes } from "./modules/pagamentos/pagamentos.routes";
+import dashboardRoutes from './modules/dashboard/dashboard.routes';
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.use(authMiddleware);
 app.use("/alunos", alunosRoutes);
 app.use("/planos", planosRoutes);
 app.use("/pagamentos", pagamentosRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 export { app };

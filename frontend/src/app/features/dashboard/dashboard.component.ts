@@ -1,73 +1,118 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MatCardModule } from '@angular/material/card';
 
-import { AlunoService } from '../alunos/../alunos/../../core/services/aluno.service';
-import { PlanoService } from '../../core/services/plano.service';
+import { AlunoService } from '../../core/services/aluno.service';
+import { Aluno } from '../../core/models/aluno.model';
+import { ChangeDetectorRef } from '@angular/core';
+
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [CommonModule, MatCardModule],
   templateUrl: './dashboard.component.html',
-
-  imports: [
-    CommonModule,
-    MatCardModule
-  ]
+  styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
 
   alunosAtivos = 0;
   faturamento = 0;
   inadimplentes = 0;
   novosAlunos = 0;
 
-  constructor(
-    private alunoService: AlunoService,
-    private planoService: PlanoService
-  ) {}
+  chart: any;
+
+  constructor(private alunoService: AlunoService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.carregarDados();
+    this.carregarDashboard();
   }
 
-  carregarDados() {
+  ngAfterViewInit() {
+    // vazio por enquanto (gráfico será criado após dados)
+  }
 
-    this.alunoService.listar().subscribe(alunos => {
+  carregarDashboard() {
+    this.alunoService.listar().subscribe({
+      next: (alunos: Aluno[]) => {
 
-      this.alunosAtivos = alunos.filter(a => a.status === 'ATIVO').length;
+  const hoje = new Date();
 
-      // Simulação de inadimplência (ex: status diferente de ATIVO)
-      this.inadimplentes = alunos.filter(a => a.status !== 'ATIVO').length;
+  this.alunosAtivos = 0;
+  this.inadimplentes = 0;
+  this.faturamento = 0;
+  this.novosAlunos = 0;
 
-      // Novos alunos do mês (simples por enquanto)
-      this.novosAlunos = alunos.length;
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
 
-      this.calcularFaturamento(alunos);
+  alunos.forEach(aluno => {
+
+    const vencimento = aluno.dataVencimento
+      ? new Date(aluno.dataVencimento)
+      : null;
+
+    const inicio = aluno.dataInicio
+      ? new Date(aluno.dataInicio)
+      : null;
+
+    const valorPlano = aluno.plano?.valor || 0;
+
+    if (vencimento && vencimento >= hoje) {
+      this.alunosAtivos++;
+      this.faturamento += valorPlano;
+    }
+
+    if (vencimento && vencimento < hoje) {
+      this.inadimplentes++;
+    }
+
+    if (inicio && inicio >= inicioMes) {
+      this.novosAlunos++;
+    }
+
+  });
+
+  this.cdr.detectChanges();
+
+  // gráfico
+  setTimeout(() => this.criarGrafico());
+}
+
+
 
     });
-
   }
 
-  calcularFaturamento(alunos: any[]) {
+  criarGrafico() {
 
-    this.planoService.listar().subscribe(planos => {
+    // evita recriar gráfico duplicado
+    if (this.chart) {
+      this.chart.destroy();
+    }
 
-      let total = 0;
-
-      alunos.forEach(aluno => {
-
-        const plano = planos.find(p => p.id === aluno.planoId);
-
-        if (plano && aluno.status === 'ATIVO') {
-          total += plano.valor;
+    this.chart = new Chart('grafico', {
+      type: 'bar',
+      data: {
+        labels: ['Ativos', 'Inadimplentes', 'Novos'],
+        datasets: [{
+          label: 'Alunos',
+          data: [
+            this.alunosAtivos,
+            this.inadimplentes,
+            this.novosAlunos
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
         }
-
-      });
-
-      this.faturamento = total;
-
+      }
     });
 
   }

@@ -1,7 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+
+import { filter } from 'rxjs/operators';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,7 +20,7 @@ import { Aluno } from '../../../../core/models/aluno.model';
 
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PagamentoService } from '../../../../core/services/pagamento.service';
-import { Pagamento } from '../../../../core/models/pagamento.model';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-alunos-list',
@@ -41,9 +43,7 @@ import { Pagamento } from '../../../../core/models/pagamento.model';
 })
 export class AlunosListComponent implements OnInit {
 
-  alunos: Aluno[] = [];
-  alunosFiltrados: Aluno[] = [];
-  pagamentos: Pagamento[] = [];
+  dataSource = new MatTableDataSource<Aluno>([]);
 
   filtro: string = '';
 
@@ -54,34 +54,34 @@ export class AlunosListComponent implements OnInit {
     private pagamentoService: PagamentoService,
     private snack: MatSnackBar,
     private dialog: MatDialog,
-    private router: Router,
-    private cdr: ChangeDetectorRef // 🔥 IMPORTANTE
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.carregarDados();
+  this.carregarDados();
+  this.dataSource.filterPredicate = (data: any, filter: string) => {
+    return data.nome.toLowerCase().includes(filter) ||
+           data.cpf.includes(filter);
+  };
+
   }
 
   carregarDados() {
+  this.alunoService.listar().subscribe({
+    next: (alunos) => {
+      this.dataSource.data = alunos;
+    },
+    error: () => {
+      this.snack.open('Erro ao carregar alunos', 'Fechar', {
+        duration: 3000
+      });
+    }
+  });
+}
 
-    this.alunoService.listar().subscribe({
-
-      next: (alunos) => {
-        this.alunos = alunos;
-        this.alunosFiltrados = [...alunos];
-
-        this.cdr.detectChanges();
-      },
-
-      error: () => {
-        this.snack.open('Erro ao carregar alunos', 'Fechar', {
-          duration: 3000
-        });
-      }
-
-    });
-
-  }
+  aplicarFiltro() {
+  this.dataSource.filter = this.filtro.trim().toLowerCase();
+}
 
   getStatusFinanceiro(aluno: any): string {
 
@@ -97,64 +97,91 @@ export class AlunosListComponent implements OnInit {
     switch (status) {
       case 'EM_DIA': return '🟢 Em dia';
       case 'INADIMPLENTE': return '🔴 Inadimplente';
-      default: return '⚪ Sem pagamentos';
+      default: return '⚪ Sem pagamento';
     }
   }
 
-  aplicarFiltro() {
-    const f = this.filtro.toLowerCase();
-
-    this.alunosFiltrados = this.alunos.filter(
-      (a: any) =>
-        a.nome.toLowerCase().includes(f) ||
-        a.cpf.includes(f)
-    );
-
-    this.alunosFiltrados = [...this.alunosFiltrados];
+  getRowClass(aluno: any): string {
+    return this.getStatusFinanceiro(aluno) === 'INADIMPLENTE'
+      ? 'linha-inadimplente'
+      : '';
   }
 
-  registrarPagamento(alunoId: number) {
-    this.router.navigate(['/pagamentos/novo', alunoId]);
+  pagamentoRapido(aluno: any) {
+
+    const valor = aluno.plano?.valor;
+
+    if (!valor) {
+      this.snack.open('Aluno sem plano definido', 'Fechar', {
+        duration: 3000
+      });
+      return;
+    }
+
+    this.pagamentoService.criar({
+      valor,
+      alunoId: aluno.id
+    }).subscribe({
+
+      next: () => {
+
+        this.snack.open('Pagamento registrado 💰', 'OK', {
+          duration: 2500
+        });
+
+        this.carregarDados();
+
+      },
+
+      error: () => {
+        this.snack.open('Erro ao registrar pagamento', 'Fechar', {
+          duration: 3000
+        });
+      }
+
+    });
+
   }
 
   excluir(id: number) {
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
-      data: {
-        titulo: 'Excluir aluno',
-        mensagem: 'Deseja realmente excluir este aluno?',
+  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    width: '350px',
+    data: {
+      titulo: 'Excluir aluno',
+      mensagem: 'Deseja realmente excluir este aluno?'
+    }
+  });
+
+  dialogRef.afterClosed().subscribe((confirmado: boolean) => {
+
+    if (!confirmado) return;
+
+    this.alunoService.deletar(id).subscribe({
+
+      next: () => {
+
+        // 🔥 remove direto do dataSource
+        this.dataSource.data = this.dataSource.data.filter(
+          (a: Aluno) => a.id !== id
+        );
+
+        this.snack.open('Aluno excluído com sucesso ✅', 'OK', {
+          duration: 2500
+        });
+
+      },
+
+      error: () => {
+        this.snack.open('Erro ao excluir aluno', 'Fechar', {
+          duration: 3000
+        });
       }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmado: boolean) => {
-
-      if (!confirmado) return;
-
-      this.alunoService.deletar(id).subscribe({
-
-        next: () => {
-
-          this.alunos = this.alunos.filter(a => a.id !== id);
-
-          this.alunosFiltrados = [...this.alunos];
-
-          this.snack.open('Aluno excluído com sucesso ✅', 'OK', {
-            duration: 2500
-          });
-
-        },
-
-        error: () => {
-          this.snack.open('Erro ao excluir aluno', 'Fechar', {
-            duration: 3000
-          });
-        }
-
-      });
 
     });
 
-  }
+  });
+
+}
 
 }

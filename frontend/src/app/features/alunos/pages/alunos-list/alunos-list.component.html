@@ -1,7 +1,11 @@
 <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
   <mat-form-field appearance="fill" style="flex:1;">
     <mat-label>Buscar Aluno</mat-label>
-    <input matInput placeholder="Nome ou CPF" [(ngModel)]="filtro" (ngModelChange)="aplicarFiltro()">
+    <input
+      matInput
+      placeholder="Nome ou CPF"
+      [(ngModel)]="filtro"
+      (ngModelChange)="aplicarFiltro()">
   </mat-form-field>
 
   <a mat-raised-button color="primary" routerLink="/alunos/novo">
@@ -10,67 +14,71 @@
 </div>
 
 <mat-card>
-  <table mat-table [dataSource]="alunosFiltrados" class="mat-elevation-z8">
+
+ <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!-- Nome -->
     <ng-container matColumnDef="nome">
       <th mat-header-cell *matHeaderCellDef>Nome</th>
       <td mat-cell *matCellDef="let aluno">{{ aluno.nome }}</td>
     </ng-container>
 
+    <!-- CPF -->
     <ng-container matColumnDef="cpf">
       <th mat-header-cell *matHeaderCellDef>CPF</th>
       <td mat-cell *matCellDef="let aluno">{{ aluno.cpf }}</td>
     </ng-container>
 
+    <!-- Plano -->
     <ng-container matColumnDef="plano">
       <th mat-header-cell *matHeaderCellDef>Plano</th>
       <td mat-cell *matCellDef="let aluno">{{ aluno.plano?.nome || '-' }}</td>
     </ng-container>
 
+    <!-- Status -->
     <ng-container matColumnDef="statusFinanceiro">
-  <th mat-header-cell *matHeaderCellDef>Status</th>
-  <td mat-cell *matCellDef="let aluno">
-    {{ getStatusLabel(aluno.statusFinanceiro) }}
-  </td>
-</ng-container>
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let aluno">
+        {{ getStatusLabel(getStatusFinanceiro(aluno)) }}
+      </td>
+    </ng-container>
 
+    <!-- Ações -->
     <ng-container matColumnDef="acoes">
-  <th mat-header-cell *matHeaderCellDef>Ações</th>
+      <th mat-header-cell *matHeaderCellDef>Ações</th>
 
-  <td mat-cell *matCellDef="let aluno">
+      <td mat-cell *matCellDef="let aluno">
 
-    <!-- editar -->
-    <button
-      mat-icon-button
-      color="primary"
-      [routerLink]="['/alunos', aluno.id!]">
+        <!-- editar -->
+        <button mat-icon-button color="primary" [routerLink]="['/alunos', aluno.id]">
+          <mat-icon>edit</mat-icon>
+        </button>
 
-      <mat-icon>edit</mat-icon>
+        <!-- excluir -->
+        <button mat-icon-button color="warn" (click)="excluir(aluno.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
 
-    </button>
+        <!-- pagamento rápido -->
+        <button
+          *ngIf="getStatusFinanceiro(aluno) === 'INADIMPLENTE'"
+          mat-raised-button
+          color="accent"
+          (click)="pagamentoRapido(aluno)">
+          💰 Pagar
+        </button>
 
-    <!-- excluir -->
-    <button
-      mat-icon-button
-      color="warn"
-      (click)="excluir(aluno.id!)">
+      </td>
+    </ng-container>
 
-      <mat-icon>delete</mat-icon>
-
-    </button>
-
-      <!-- pagamento -->
-  <button mat-icon-button color="accent" (click)="registrarPagamento(aluno.id)">
-    <mat-icon>payments</mat-icon>
-  </button>
-
-  </td>
-</ng-container>
-
-
-
+    <!-- linhas -->
     <tr mat-header-row *matHeaderRowDef="colunas"></tr>
-    <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
-
+    <tr
+      mat-row
+      *matRowDef="let row; columns: colunas;"
+      [ngClass]="getRowClass(row)">
+    </tr>
 
   </table>
+
 </mat-card>
