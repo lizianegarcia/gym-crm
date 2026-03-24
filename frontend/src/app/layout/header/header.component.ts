@@ -24,7 +24,6 @@ export class HeaderComponent {
   constructor(private auth: AuthService, private router: Router) {}
 
   logout() {
-    // se você quiser chamar o backend /auth/logout, pode fazer aqui também.
     this.auth.logout();
     this.router.navigate(['/login']);
   }

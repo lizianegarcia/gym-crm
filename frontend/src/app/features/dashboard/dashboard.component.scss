@@ -5,43 +5,47 @@
 }
 
 .card {
+  border-radius: 14px;
   padding: 16px;
+  background: #ffffff;
+  border: 1px solid #eee;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .valor {
   font-size: 28px;
   font-weight: bold;
-  margin: 8px 0 0;
+  margin-top: 8px;
 }
 
+
 .ativo {
-  color: #2e7d32; 
+  color: #16a34a;
 }
 
 .inadimplente {
-  color: #c62828;
+  color: #dc2626;
 }
 
 .novo {
-  color: #1565c0;
+  color: #2563eb;
+}
+
+
+.card:nth-child(2) .valor {
+  color: #f97316;
 }
 
 .grafico-container {
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
 .titulo-grafico {
   margin-bottom: 16px;
-}
-
-@media (max-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
+  font-weight: 600;
 }

@@ -3,12 +3,20 @@
 }
 
 .sidenav {
-  width: 240px;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #eee;
+}
+
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .content {
+  flex: 1;
   padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  background: #f8fafc;
+  overflow: auto;
 }
