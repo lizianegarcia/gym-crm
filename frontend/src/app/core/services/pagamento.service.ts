@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CriarPagamentoDTO, Pagamento } from '../models/pagamento.model';
-
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PagamentoService {
 
-  private api = 'http://localhost:3000/pagamentos';
+  private api = `${environment.apiUrl}/pagamentos`;
 
   constructor(private http: HttpClient) {}
 

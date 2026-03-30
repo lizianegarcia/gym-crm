@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Plano {
   id?: number;
@@ -12,7 +13,7 @@ export interface Plano {
 @Injectable({ providedIn: 'root' })
 export class PlanoService {
 
-  private api = 'http://localhost:3000/planos';
+  private api = `${environment.apiUrl}/planos`;
 
   constructor(private http: HttpClient) {}
 

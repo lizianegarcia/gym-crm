@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { Aluno } from '../models/aluno.model';
+import { environment } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlunoService {
 
-  private api = 'http://localhost:3000/alunos';
+  private api = `${environment.apiUrl}/alunos`;
 
   constructor(private http: HttpClient) {}
 

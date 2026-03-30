@@ -83,4 +83,30 @@ export class AuthService {
 
   return { message: "Logout realizado com sucesso" };
 }
+
+async register({ email, senha }: { email: string; senha: string }) {
+  const usuarioExistente = await prisma.usuario.findUnique({
+    where: { email },
+  });
+
+  if (usuarioExistente) {
+    throw new Error("Usuário já existe");
+  }
+
+  const senhaHash = await bcrypt.hash(senha, 10);
+
+  const usuario = await prisma.usuario.create({
+    data: {
+      email,
+      senha: senhaHash,
+      nome: "Admin",
+      role: "ADMIN",
+    },
+  });
+
+  return {
+    id: usuario.id,
+    email: usuario.email,
+  };
+}
 }

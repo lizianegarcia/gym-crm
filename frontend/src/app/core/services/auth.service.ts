@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface LoginResponse {
   usuario: { id: number; nome: string; email: string; role: string };
@@ -10,7 +11,7 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://localhost:3000';
+  private api = `${environment.apiUrl}`;
   private accessTokenKey = 'gymcrm_access_token';
   private refreshTokenKey = 'gymcrm_refresh_token';
 
