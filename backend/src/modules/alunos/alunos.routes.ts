@@ -5,11 +5,34 @@ const alunosRoutes = Router();
 
 // GET /alunos
 alunosRoutes.get("/", async (req, res) => {
-  const alunos = await prisma.aluno.findMany({
-    include: { plano: true },
-    orderBy: { id: "desc" },
-  });
-  res.json(alunos);
+  try {
+    const user = (req as any).user;
+
+    if (!user) {
+      return res.status(401).json({ error: "Usuário não autenticado" });
+    }
+
+    const alunos = await prisma.aluno.findMany({
+      where: {
+        usuarioId: user.id, 
+      },
+      include: {
+        plano: true,
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+
+    return res.json(alunos);
+
+  } catch (error) {
+    console.error("Erro ao buscar alunos:", error);
+
+    return res.status(500).json({
+      error: "Erro ao buscar alunos",
+    });
+  }
 });
 
 // GET /alunos/:id

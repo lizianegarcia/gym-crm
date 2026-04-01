@@ -42,7 +42,11 @@ export class LoginComponent {
     const { email, senha } = this.form.value;
 
     this.auth.login(email, senha).subscribe({
-      next: () => this.router.navigate(['/']),
+        next: () => {
+          setTimeout(() => {
+            this.router.navigateByUrl('/', { replaceUrl: true });
+          });
+        },
       error: (err) => console.error(err)
     });
   }
