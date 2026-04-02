@@ -7,11 +7,30 @@ const alunosRoutes = (0, express_1.Router)();
 exports.alunosRoutes = alunosRoutes;
 // GET /alunos
 alunosRoutes.get("/", async (req, res) => {
-    const alunos = await database_1.prisma.aluno.findMany({
-        include: { plano: true },
-        orderBy: { id: "desc" },
-    });
-    res.json(alunos);
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ error: "Usuário não autenticado" });
+        }
+        const alunos = await database_1.prisma.aluno.findMany({
+            where: {
+                usuarioId: user.id,
+            },
+            include: {
+                plano: true,
+            },
+            orderBy: {
+                id: "desc",
+            },
+        });
+        return res.json(alunos);
+    }
+    catch (error) {
+        console.error("Erro ao buscar alunos:", error);
+        return res.status(500).json({
+            error: "Erro ao buscar alunos",
+        });
+    }
 });
 // GET /alunos/:id
 alunosRoutes.get("/:id", async (req, res) => {

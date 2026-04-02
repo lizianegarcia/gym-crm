@@ -15,7 +15,10 @@ const dashboard_routes_1 = __importDefault(require("./modules/dashboard/dashboar
 const app = (0, express_1.default)();
 exports.app = app;
 app.use((0, cors_1.default)({
-    origin: true,
+    origin: [
+        "http://localhost:4200",
+        "https://gym-crm-front.onrender.com"
+    ],
     credentials: true,
 }));
 app.use(express_1.default.json());

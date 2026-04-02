@@ -11,7 +11,10 @@ import dashboardRoutes from './modules/dashboard/dashboard.routes';
 const app = express();
 
 app.use(cors({
-  origin: "https://gym-crm-front.onrender.com",
+  origin: [
+    "http://localhost:4200", 
+    "https://gym-crm-front.onrender.com"
+  ],
   credentials: true,
 }));
 app.use(express.json());

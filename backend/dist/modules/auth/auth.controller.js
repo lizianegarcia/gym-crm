@@ -41,5 +41,16 @@ class AuthController {
             return res.status(400).json({ error: error.message });
         }
     }
+    async register(req, res) {
+        try {
+            const { email, senha } = req.body;
+            const authService = new auth_service_1.AuthService();
+            const user = await authService.register({ email, senha });
+            return res.json(user);
+        }
+        catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    }
 }
 exports.AuthController = AuthController;
