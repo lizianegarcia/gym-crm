@@ -6,7 +6,7 @@ Sistema web de gestão desenvolvido para a **Academia Biofit**, com foco em cont
 
 ## 🌐 Acesso ao Sistema
 
-* 🔗 Frontend: [https://gym-crm-front.onrender.com/](https://gym-crm-front.onrender.com/)
+* 🔗 Frontend: [https://gym-crm-front.onrender.com/](https://gym-crm-front.onrender.com)
 * 🔗 Backend API: [https://gym-crm-pba7.onrender.com](https://gym-crm-pba7.onrender.com)
 
 ---
